@@ -1,0 +1,56 @@
+-------Porfolio Project: Data Cleaning
+/* Data Description
+total_laid_off : Number of employees laid off
+date : Date of layoff
+percentage_laid_off :Percentage of employees laid off */
+
+/* Question:
+1: Từ tỉ lệ laid với tổng nhân viên lay off, mình truy ngược lại tổng số nhân viên ở thời diểm đó được không ?
+nếu 22% = 248 người => 100% = (248/22)*100 = 1127
+*/
+
+-----------------------------------------------------------------------------------------
+--How to avoid the "divide by zero" error in SQL?: percentage_laid_off  giá trị null / 0
+SET ARITHABORT OFF 
+SET ANSI_WARNINGS OFF
+-----------------------------------------------------------------------------------------
+--Check Data Type
+select column_name, data_type
+from information_schema.COLUMNS
+where table_name = 'layoff' and table_schema = 'dbo';
+-----------------------------------------------------------------------------------------
+--- 1. Remove Duplicates
+--- 2. Standardize the Data
+--- 3. Null Values or Blank Values
+--- 4. Remove Any Columns or Rows which are not necessary
+-----------------------------------------------------------------------------------------
+/* Create a copy table: The reason to create a copy table, because if we make mistakes => destroy the raw data */
+/* In the workplace, we dont work on the raw data*/
+select * 
+into layoff_copy
+from dbo.layoff;
+
+select *
+from layoff_copy
+
+
+
+
+
+
+
+--- First, the data availability from 2020 -> 2025
+select distinct(year(date))
+from dbo.layoff
+
+--Bởi vì percentage_laid_off có ký tự % nên là string => mình sẽ rút số ra bỏ %
+--Take all the values from left except '%'
+select left(percentage_laid_off,len(percentage_laid_off)-1)
+from dbo.layoff
+
+select	company,
+		location, 
+		total_laid_off, percentage_laid_off, 
+		((total_laid_off / left(percentage_laid_off,len(percentage_laid_off)-1))*100) as total_employee_before_laidoff
+from dbo.layoff
+---------------------------------------------------------
