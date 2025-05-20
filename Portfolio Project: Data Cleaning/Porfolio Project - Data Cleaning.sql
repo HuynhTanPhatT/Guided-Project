@@ -1,4 +1,6 @@
-﻿-------Porfolio Project: Data Cleaning
+--Kaggle:https://www.kaggle.com/datasets/swaptr/layoffs-2022--
+
+-------Porfolio Project: Data Cleaning
 /* Data Description
 total_laid_off : Number of employees laid off
 date : Date of layoff
