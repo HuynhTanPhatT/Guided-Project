@@ -6,11 +6,6 @@ total_laid_off : Number of employees laid off
 date : Date of layoff
 percentage_laid_off :Percentage of employees laid off */
 
-/* Question:
-1: Từ tỉ lệ laid với tổng nhân viên lay off, mình truy ngược lại tổng số nhân viên ở thời diểm đó được không ?
-nếu 22% = 248 người => 100% = (248/22)*100 = 1127
-*/
-
 -----------------------------------------------------------------------------------------
 --How to avoid the "divide by zero" error in SQL?: percentage_laid_off  giá trị null / 0
 SET ARITHABORT OFF 
@@ -90,35 +85,26 @@ where industry is null;
 
 select *
 from dbo.layoff_copy
-where company = 'Appsmith'
---where industry is null or industry = ''
+where industry is null or industry = ''
 
---b/ If there is no lay off in the company based on "Total_laid_off" and "Percentage_laid_off"" 
---When filter null value from total_laid_off, i see that there are lots of percentages column also have null values. 
---I don't think is nesscary to keep total and percentages are null in a row
+
+--b/ "Total_laid_off" and "Percentage_laid_off".
 select *
 from dbo.layoff_copy
-where total_laid_off is null
-and percentage_laid_off is null;
+where (total_laid_off is null or  percentage_laid_off is null) ;
 
+
+ --c/Stage: Null Values -> Unknown
+ update dbo.layoff_copy
+ set stage = 'Unknown'
+ where stage is null
+
+
+/* 4. Remove Any Columns or Rows which are not necessary */
+--a/ I think that total_laid_off and percentage_laid_off both are null should delete => no usefull information ...
+DELETE 
+from dbo.layoff_copy
+where total_laid_off is null or percentage_laid_off is null
 -----------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
---Bởi vì percentage_laid_off có ký tự % nên là string => mình sẽ rút số ra bỏ %
---Take all the values from left except '%'
-select left(percentage_laid_off,len(percentage_laid_off)-1)
-from dbo.layoff_copy
-
-select	company,
-		location, 
-		total_laid_off, percentage_laid_off, 
-		((total_laid_off / left(percentage_laid_off,len(percentage_laid_off)-1))*100) as total_employee_before_laidoff
-from dbo.layoff_copy
-
----------------------------------------------------------
+---Rename Column
+exec sp_rename 'dbo.layoff_copy.funds_raised', 'funds_raised_milions'
